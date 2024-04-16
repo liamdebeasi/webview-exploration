@@ -14,7 +14,10 @@ export class AppComponent {
   constructor(private router: Router, private location: Location) {
     router.events.subscribe((val) => {
       if (val instanceof ResolveEnd) {
+        // ignore initial navigation
         if (val.url !== router.url && val.id !== 1) {
+          // navigate back to previous view so app does not re-render
+          // because the new view should be shown in a separate webview
           router.navigateByUrl(router.url);
 
           if (typeof window !== 'undefined') {
