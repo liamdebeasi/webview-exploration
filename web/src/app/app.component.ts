@@ -19,8 +19,6 @@ export class AppComponent {
 
           if (typeof window !== 'undefined') {
             (window as any).webkit.messageHandlers.navigationMessageHandler.postMessage('foo')
-            console.log('STUB: DELEGATE TO NATIVE',val.url, router.url, val, location)
-
           }
         }
       }
