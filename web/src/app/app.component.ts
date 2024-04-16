@@ -13,6 +13,9 @@ export class AppComponent {
 
   constructor(private router: Router, private location: Location) {
     router.events.subscribe((val) => {
+      // only intercept navigation once guards have resolved
+      // this lets dev rely on Angular's guards to
+      // control navigation
       if (val instanceof ResolveEnd) {
         // ignore initial navigation
         if (val.url !== router.url && val.id !== 1) {
