@@ -10,16 +10,21 @@ import SwiftUI
 
 struct MovieDetail: View {
     let isNew: Bool
+    let movieID: String
+    let url: String;
     
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     
-    init(isNew: Bool = false) {
+    init(movieID: String = "", isNew: Bool = false) {
         self.isNew = isNew
+        self.movieID = movieID
+        self.url = "https://liam.ngrok.app" + self.movieID;
+        print(self.url)
     }
     
     var body: some View {
-        WebView(url: URL(string: "https://liam.ngrok.app/about")!)
+        WebView(url: URL(string: url)!)
             .ignoresSafeArea()
             .navigationBarTitleDisplayMode(.inline)
         .navigationTitle(isNew ? "New Movie" : "Movie")

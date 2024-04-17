@@ -1,6 +1,6 @@
 <div class="list">
   @for (movie of movies; track movie) {
-    <div class="item" routerLink="/about">{{ movie.title }}</div>
+    <div class="item" routerLink="/movie/{{ movie.id }}">{{ movie.title }}</div>
   }
   <div class="item" routerLink="/guarded-page">
     This won't do anything due to Angular guard

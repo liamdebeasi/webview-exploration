@@ -1,6 +1,24 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, Router, ResolveEnd } from '@angular/router';
-import { Location } from '@angular/common';
+
+interface MessageHandler {
+  postMessage: (...args: any) => void;
+}
+
+interface MessageHandlers {
+  navigationMessageHandler: MessageHandler;
+}
+
+interface WKMessageHandler {
+  messageHandlers: MessageHandlers
+}
+
+interface NativeWindow extends Window {
+  webkit?: WKMessageHandler;
+}
+
+const win: NativeWindow | undefined = typeof window !== 'undefined' ? window : undefined;
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -11,7 +29,7 @@ import { Location } from '@angular/common';
 export class AppComponent {
   title = 'ssg-test';
 
-  constructor(private router: Router, private location: Location) {
+  constructor(private router: Router) {
     router.events.subscribe((val) => {
       // only intercept navigation once guards have resolved
       // this lets dev rely on Angular's guards to
@@ -19,15 +37,19 @@ export class AppComponent {
       if (val instanceof ResolveEnd) {
         // ignore initial navigation
         if (val.url !== router.url && val.id !== 1) {
-          // navigate back to previous view so app does not re-render
-          // because the new view should be shown in a separate webview
-          router.navigateByUrl(router.url);
-
-          if (typeof window !== 'undefined') {
-            (window as any).webkit.messageHandlers.navigationMessageHandler.postMessage('foo')
-          }
+          this.pushNativeView(val.url);
         }
       }
     });
+  }
+
+  pushNativeView(url: string) {
+    if (win !== undefined && win.webkit) {
+      // navigate back to previous view so app does not re-render
+      // because the new view should be shown in a separate webview
+      this.router.navigateByUrl(this.router.url);
+
+      win.webkit.messageHandlers.navigationMessageHandler.postMessage(url);
+    }
   }
 }

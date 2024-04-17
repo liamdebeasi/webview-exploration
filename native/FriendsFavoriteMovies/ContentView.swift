@@ -13,6 +13,7 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Movie.title) private var movies: [Movie]
     @State var pushActive = false
+    @State var pushPath = ""
     
     @State private var newMovie: Movie?
 
@@ -30,7 +31,7 @@ struct ContentView: View {
                     }
                 }
             }
-            NavigationLink(destination: MovieDetail(), isActive: $pushActive) {
+            NavigationLink(destination: MovieDetail(movieID: self.pushPath), isActive: $pushActive) {
                 EmptyView()
             }.hidden()
             
@@ -42,6 +43,8 @@ struct ContentView: View {
     
     private func pushView(message: WKScriptMessage) {
         self.pushActive = true;
+        self.pushPath = message.body as? String ?? "";
+        print(message.body)
     }
 
 
