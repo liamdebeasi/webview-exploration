@@ -31,13 +31,19 @@ struct WebView: UIViewRepresentable {
         }
                 
         coordinator?.webView = webView
+        
+        let request = URLRequest(url: url)
+        webView.load(request)
+        
+        webView.isInspectable = true
+        
         return webView
     }
 
     func updateUIView(_ webView: WKWebView, context: Context) {
-        let request = URLRequest(url: url)
-        webView.load(request)
-        webView.isInspectable = true
+        //let request = URLRequest(url: url)
+        //webView.load(request)
+        //webView.isInspectable = true
     }
 }
 
