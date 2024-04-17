@@ -15,12 +15,12 @@ struct ContentView: View {
     @State var pushActive = false
     @State var pushPath = ""
     
-    @State private var newMovie: Movie?
-
-
+    @State private var showNewMovieView: Bool = false;
+    private var webViewCoordinator = WebViewCoordinator()
+    
     var body: some View {
         NavigationSplitView {
-            WebView(url: URL(string: "https://liam.ngrok.app/")!, messageHandler: WebKitMessageHandler(callback: self.pushView))
+            WebView(url: URL(string: "https://liam.ngrok.app/")!, coordinator: webViewCoordinator, messageHandler: WebKitMessageHandler(callback: self.handlerCallback))
                 .ignoresSafeArea()
                 .navigationBarTitleDisplayMode(.inline)
             .navigationTitle("Movies")
@@ -31,7 +31,12 @@ struct ContentView: View {
                     }
                 }
             }
-            NavigationLink(destination: MovieDetail(movieID: self.pushPath), isActive: $pushActive) {
+            .sheet(isPresented: $showNewMovieView) {
+                NavigationView {
+                    MovieDetail(path: "/movie", isNew: true)
+                }
+            }
+            NavigationLink(destination: MovieDetail(path: self.pushPath), isActive: $pushActive) {
                 EmptyView()
             }.hidden()
             
@@ -40,21 +45,26 @@ struct ContentView: View {
                 .navigationTitle("Movie")
         }
     }
-    
-    private func pushView(message: WKScriptMessage) {
-        self.pushActive = true;
-        self.pushPath = message.body as? String ?? "";
-        print(message.body)
-    }
-
 
     private func addMovie() {
-        withAnimation {
-            let newItem = Movie(title: "", releaseDate: .now)
-            newMovie = newItem
+        let javascript = "window.dispatchEvent(new CustomEvent('add-movie-click'));"
+        webViewCoordinator.webView?.evaluateJavaScript(javascript)
+    }
+    
+    private func handlerCallback(message: WKScriptMessage) {
+        if let data = message.body as? [String: AnyObject],
+            let payload = data["data"] as? String,
+            let type = data["type"] as? String {
+            print(data)
+                        
+            if type == "createAddMovieView" {
+                self.showNewMovieView = true
+            } else if type == "createEditMovieView" {
+                self.pushActive = true
+                self.pushPath = payload
+            }
         }
     }
-
 
     private func deleteItems(offsets: IndexSet) {
         withAnimation {

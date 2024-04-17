@@ -11,20 +11,27 @@ import WebKit
 struct WebView: UIViewRepresentable {
     let url: URL
     let messageHandler: WebKitMessageHandler!;
+    let coordinator: WebViewCoordinator?
     
-    init(url: URL, messageHandler: WebKitMessageHandler? = nil) {
+    init(url: URL, coordinator: WebViewCoordinator? = nil, messageHandler: WebKitMessageHandler? = nil) {
+        self.coordinator = coordinator ?? nil
         self.url = url
         self.messageHandler = messageHandler ?? nil
     }
     
     func makeUIView(context: Context) -> WKWebView {
+        let webView: WKWebView;
         if (self.messageHandler != nil) {
             let config = WKWebViewConfiguration()
-            config.userContentController.add(messageHandler, name: "navigationMessageHandler")
-            return WKWebView(frame: .zero, configuration: config)
+            config.userContentController.add(self.messageHandler, name: "navigationMessageHandler")
+            
+            webView = WKWebView(frame: .zero, configuration: config)
+        } else {
+            webView = WKWebView()
         }
-        
-        return WKWebView()
+                
+        coordinator?.webView = webView
+        return webView
     }
 
     func updateUIView(_ webView: WKWebView, context: Context) {
@@ -32,6 +39,10 @@ struct WebView: UIViewRepresentable {
         webView.load(request)
         webView.isInspectable = true
     }
+}
+
+class WebViewCoordinator: NSObject {
+    var webView: WKWebView?
 }
 
 class WebKitMessageHandler: NSObject, WKScriptMessageHandler {

@@ -1,23 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, Router, ResolveEnd } from '@angular/router';
-
-interface MessageHandler {
-  postMessage: (...args: any) => void;
-}
-
-interface MessageHandlers {
-  navigationMessageHandler: MessageHandler;
-}
-
-interface WKMessageHandler {
-  messageHandlers: MessageHandlers
-}
-
-interface NativeWindow extends Window {
-  webkit?: WKMessageHandler;
-}
-
-const win: NativeWindow | undefined = typeof window !== 'undefined' ? window : undefined;
+import { win } from './browser';
 
 @Component({
   selector: 'app-root',
@@ -43,13 +26,40 @@ export class AppComponent {
     });
   }
 
+  private handlerCallback = this.openAddMovieView.bind(this);
+
+  ngOnInit() {
+    if (win) {
+      win.addEventListener('add-movie-click', this.handlerCallback);
+    }
+  }
+
+  ngOnDestroy() {
+    if (win) {
+      win.removeEventListener('add-movie-click', this.handlerCallback);
+    }
+  }
+
+  openAddMovieView() {
+    console.log('Opening add movie view')
+    if (win && win.webkit) {
+      win.webkit.messageHandlers.navigationMessageHandler.postMessage({
+        type: 'createAddMovieView',
+        data: 'stub'
+      });
+    }
+  }
+
   pushNativeView(url: string) {
-    if (win !== undefined && win.webkit) {
+    if (win && win.webkit) {
       // navigate back to previous view so app does not re-render
       // because the new view should be shown in a separate webview
       this.router.navigateByUrl(this.router.url);
 
-      win.webkit.messageHandlers.navigationMessageHandler.postMessage(url);
+      win.webkit.messageHandlers.navigationMessageHandler.postMessage({
+        type: 'createEditMovieView',
+        data: url
+      });
     }
   }
 }

@@ -1,11 +1,11 @@
 <form>
   <div class="list">
     <div class="item">
-      <input type="text" placeholder="Movie title" />
+      <input type="text" name="name" [(ngModel)]="name" placeholder="Movie title" />
     </div>
     <div class="item">
       <label for="date">Release Date</label>
-      <input id="date" type="date" placeholder="Release Date" value="2024-04-15" />
+      <input id="date" name="releaseDate" [(ngModel)]="releaseDate" type="date" placeholder="Release Date" />
     </div>
   </div>
 </form>
