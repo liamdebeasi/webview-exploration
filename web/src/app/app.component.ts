@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet, Router, ResolveEnd } from '@angular/router';
 import { win } from './browser';
+import { NavigationService } from './services/navigation.service';
+import { NativeService } from './services/native.service';
+import { MoviesService } from './services/movies.service';
 
 @Component({
   selector: 'app-root',
@@ -10,7 +13,10 @@ import { win } from './browser';
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'ssg-test';
+  private navigationService = inject(NavigationService);
+  private nativeService = inject(NativeService);
+  private moviesService = inject(MoviesService);
+  private destroyListener: (() => void) | undefined;
 
   constructor(private router: Router) {
     router.events.subscribe((val) => {
@@ -26,39 +32,27 @@ export class AppComponent {
     });
   }
 
-  private handlerCallback = this.openAddMovieView.bind(this);
-
   ngOnInit() {
-    if (win) {
-      win.addEventListener('add-movie-click', this.handlerCallback);
-    }
+    const destroy = this.moviesService.onAddMovieActivate(() => {
+      this.navigationService.navigateMovieView();
+    });
+
+    this.destroyListener = destroy;
   }
 
   ngOnDestroy() {
-    if (win) {
-      win.removeEventListener('add-movie-click', this.handlerCallback);
-    }
-  }
-
-  openAddMovieView() {
-    if (win && win.webkit) {
-      win.webkit.messageHandlers.navigationMessageHandler.postMessage({
-        type: 'createAddMovieView',
-        data: 'stub'
-      });
+    if (this.destroyListener) {
+      this.destroyListener();
+      this.destroyListener = undefined;
     }
   }
 
   pushNativeView(url: string) {
-    if (win && win.webkit) {
+    if (this.nativeService.isNative()) {
       // navigate back to previous view so app does not re-render
       // because the new view should be shown in a separate webview
       this.router.navigateByUrl(this.router.url);
-
-      win.webkit.messageHandlers.navigationMessageHandler.postMessage({
-        type: 'createEditMovieView',
-        data: url
-      });
+      this.navigationService.navigateMovieView(url);
     }
   }
 }

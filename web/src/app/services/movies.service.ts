@@ -32,4 +32,8 @@ export class MoviesService {
   onAddMovieConfirm(callback: () => void) {
     return this.native.listenForNative<Movie[]>('add-movie-confirm-response', callback);
   }
+
+  onAddMovieActivate(callback: () => void) {
+    return this.native.listenForNative<Movie[]>('add-movie-activate-response', callback);
+  }
 }

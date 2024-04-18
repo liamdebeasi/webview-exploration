@@ -92,8 +92,6 @@ struct MovieDetail: View {
                     }
                 }
             }
-        } else {
-            print("BOO")
         }
         
     }

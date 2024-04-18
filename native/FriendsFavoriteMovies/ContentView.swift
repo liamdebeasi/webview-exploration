@@ -47,7 +47,7 @@ struct ContentView: View {
     }
 
     private func addMovie() {
-        let javascript = "window.dispatchEvent(new CustomEvent('add-movie-click'));"
+        let javascript = "window.dispatchEvent(new CustomEvent('add-movie-activate-response'));"
         webViewCoordinator.webView?.evaluateJavaScript(javascript)
     }
     
@@ -67,12 +67,12 @@ struct ContentView: View {
             let type = data["type"] as? String {
             print(data)
                         
-            if type == "createAddMovieView" {
-                self.showNewMovieView = true
-            } else if type == "createEditMovieView" {
+            if type == "navigate-movie-view" {
                 if let payload = data["data"] as? String {
                     self.pushActive = true
                     self.pushPath = payload
+                } else {
+                    self.showNewMovieView = true
                 }
             } else if type == "fetch-movies" {
                 refreshMovies()
