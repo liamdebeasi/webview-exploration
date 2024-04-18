@@ -31,7 +31,7 @@ struct ContentView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showNewMovieView) {
+            .sheet(isPresented: $showNewMovieView, onDismiss: refreshMovies) {
                 NavigationView {
                     MovieDetail(path: "/movie", isNew: true)
                 }
@@ -51,6 +51,17 @@ struct ContentView: View {
         webViewCoordinator.webView?.evaluateJavaScript(javascript)
     }
     
+    private func refreshMovies() {
+        guard let json = try? JSONEncoder().encode(movies),
+              let jsonString = String(data: json, encoding: .utf8) else {
+            return
+        }
+        
+        
+        let javascript = "window.dispatchEvent(new CustomEvent('refresh-movies', { detail: \(jsonString) }));"
+        webViewCoordinator.webView?.evaluateJavaScript(javascript)
+    }
+    
     private func handlerCallback(message: WKScriptMessage) {
         if let data = message.body as? [String: AnyObject],
             let payload = data["data"] as? String,
@@ -62,6 +73,8 @@ struct ContentView: View {
             } else if type == "createEditMovieView" {
                 self.pushActive = true
                 self.pushPath = payload
+            } else if type == "requestMovies" {
+                refreshMovies()
             }
         }
     }

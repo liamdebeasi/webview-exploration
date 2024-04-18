@@ -26,26 +26,23 @@ class SampleData {
         
         do {
             modelContainer = try ModelContainer(for: schema, configurations: [modelConfiguration])
-            insertSampleData()
+            //insertSampleData()
         } catch {
             fatalError("Could not create ModelContainer: \(error)")
         }
     }
     
-    func insertSampleData() {
-        for movie in Movie.sampleData {
-            context.insert(movie)
-        }
-        
-        do {
-            try context.save()
-        } catch {
-            print("Sample data context failed to save.")
-        }
-    }
-    
-    var movie: Movie {
-        Movie.sampleData[0]
-    }
+//    func insertSampleData() {
+//        for movie in Movie.sampleData {
+//            context.insert(movie)
+//        }
+//        
+//        do {
+//            try context.save()
+//        } catch {
+//            print("Sample data context failed to save.")
+//        }
+//    }
+
     
 }

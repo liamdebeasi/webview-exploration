@@ -41,7 +41,6 @@ export class AppComponent {
   }
 
   openAddMovieView() {
-    console.log('Opening add movie view')
     if (win && win.webkit) {
       win.webkit.messageHandlers.navigationMessageHandler.postMessage({
         type: 'createAddMovieView',

@@ -9,27 +9,35 @@ import Foundation
 import SwiftData
 
 @Model
-final class Movie {
-    var title: String
-    var releaseDate: Date
+final class Movie: Codable {
     
-    init(title: String, releaseDate: Date) {
-        self.title = title
-        self.releaseDate = releaseDate
+    enum CodingKeys: CodingKey {
+        case title
+        case releaseDate
+        case id
     }
     
-    static let sampleData = [
-        Movie(title: "Amusing Space Traveler 3",
-                      releaseDate: Date(timeIntervalSinceReferenceDate: -402_000_000)),
-        Movie(title: "Difficult Cat",
-                      releaseDate: Date(timeIntervalSinceReferenceDate: -20_000_000)),
-        Movie(title: "Electrifying Trek",
-              releaseDate: Date(timeIntervalSinceReferenceDate: 300_000_000)),
-        Movie(title: "Reckless Train Ride 2",
-              releaseDate: Date(timeIntervalSinceReferenceDate: 120_000_000)),
-        Movie(title: "The Last Venture",
-              releaseDate: Date(timeIntervalSinceReferenceDate: 550_000_000)),
-        Movie(title: "Glamorous Neighbor",
-              releaseDate: Date(timeIntervalSinceReferenceDate: 700_000_000))
-    ]
+    var title: String
+    var releaseDate: Int
+    var id: Int
+    
+    init(title: String, releaseDate: Int) {
+        self.title = title
+        self.releaseDate = releaseDate
+        self.id = Int(Date().timeIntervalSince1970)
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        title = try container.decode(String.self, forKey: .title)
+        releaseDate = try container.decode(Int.self, forKey: .releaseDate)
+        id = try container.decode(Int.self, forKey: .id)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(title, forKey: .title)
+        try container.encode(releaseDate, forKey: .releaseDate)
+        try container.encode(id, forKey: .id)
+    }
 }

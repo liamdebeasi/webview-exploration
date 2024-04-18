@@ -41,9 +41,10 @@ struct WebView: UIViewRepresentable {
     }
 
     func updateUIView(_ webView: WKWebView, context: Context) {
-        //let request = URLRequest(url: url)
-        //webView.load(request)
-        //webView.isInspectable = true
+        if (url != webView.url) {
+            let request = URLRequest(url: url)
+            webView.load(request)
+        }
     }
 }
 
