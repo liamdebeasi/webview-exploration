@@ -1,6 +1,7 @@
-import { Component, input, effect } from '@angular/core';
+import { Component, input, effect, inject } from '@angular/core';
 import { win } from '../browser'
 import { FormsModule } from '@angular/forms';
+import { MoviesService } from '../services/movies.service';
 
 @Component({
   selector: 'app-movie',
@@ -10,55 +11,39 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './movie.component.css'
 })
 export class MovieComponent {
+  private moviesService = inject(MoviesService);
+  private destroyAddMovieListener: (() => void) | undefined;
 
-  name: string | undefined;
-  releaseDate: string | undefined = '2024-04-16';
+  title: string | undefined;
+  releaseDate: string | undefined;
 
   id = input.required<number>()
 
-  private confirmCallback = this.confirmAddMovie.bind(this);
-  private receiveCallback = this.receiveMovie.bind(this);
-
   constructor() {
-    if (win) {
-      win.addEventListener('confirm-add-movie', this.confirmCallback);
-      win.addEventListener('receive-movie', this.receiveCallback);
-    }
+    const destroy = this.moviesService.onAddMovieConfirm(() => {
+      if (this.title && this.releaseDate) {
+        this.moviesService.addMovie(this.title, this.releaseDate);
+      }
+    });
 
-    effect(() => {
-      if (win && win.webkit) {
-        const id = this.id();
+    this.destroyAddMovieListener = destroy;
 
-        win.webkit.messageHandlers.navigationMessageHandler.postMessage({
-          type: 'fetchMovie',
-          data: id
-        })
+    effect(async () => {
+      const res = await this.moviesService.fetchMovie(this.id());
+
+      if (res) {
+        const { title, releaseDate } = res;
+
+        this.title = title;
+        this.releaseDate = new Date(releaseDate).toISOString().split('T')[0]; // TODO this is not timezone-safe
       }
     });
   }
 
   ngOnDestroy() {
-    if (win) {
-      win.removeEventListener('confirm-add-movie', this.confirmCallback);
-      win.removeEventListener('receive-movie', this.receiveCallback);
-    }
-  }
-
-  receiveMovie(ev: any) {
-    this.name = ev.detail.title;
-    // TODO
-    this.releaseDate = new Date(ev.detail.releaseDate * 1000).toISOString().split('T')[0];
-  }
-
-  confirmAddMovie() {
-    if (win && win.webkit) {
-      win.webkit.messageHandlers.navigationMessageHandler.postMessage({
-        type: 'addMovie',
-        data: {
-          name: this.name,
-          releaseDate: this.releaseDate
-        }
-      })
+    if (this.destroyAddMovieListener) {
+      this.destroyAddMovieListener();
+      this.destroyAddMovieListener = undefined;
     }
   }
 }

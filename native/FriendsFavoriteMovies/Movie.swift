@@ -24,7 +24,7 @@ final class Movie: Codable {
     init(title: String, releaseDate: Int) {
         self.title = title
         self.releaseDate = releaseDate
-        self.id = Int(Date().timeIntervalSince1970)
+        self.id = Int(Date().timeIntervalSince1970 * 1000)
     }
     
     required init(from decoder: Decoder) throws {

@@ -1,11 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { win } from '../browser';
+import { MoviesService } from '../services/movies.service';
 
-interface Movie {
-  title: string;
-  id: number;
-}
+import type { Movie } from '../types';
 
 @Component({
   selector: 'app-home',
@@ -15,30 +12,29 @@ interface Movie {
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
+  private moviesService = inject(MoviesService);
+  private destroyMoviesChangeListener: (() => void) | undefined;
+
   movies: Movie[] = [];
 
-  private handlerCallback = this.refreshMovies.bind(this);
+  constructor() {}
 
-  ngOnInit() {
-    if (win) {
-      win.addEventListener('refresh-movies', this.handlerCallback);
+  async ngOnInit() {
+    const res = await this.moviesService.fetchMovies();
 
-      if (win && win.webkit) {
-        win.webkit.messageHandlers.navigationMessageHandler.postMessage({
-          type: 'requestMovies',
-          data: 'plz'
-        });
-      }
-    }
+    this.movies = res ?? [];
+
+    const destroy = this.moviesService.onMoviesChange((movies) => {
+      this.movies = movies;
+    });
+
+    this.destroyMoviesChangeListener = destroy;
   }
 
   ngOnDestroy() {
-    if (win) {
-      win.removeEventListener('refresh-movies', this.handlerCallback);
+    if (this.destroyMoviesChangeListener) {
+      this.destroyMoviesChangeListener();
+      this.destroyMoviesChangeListener = undefined;
     }
-  }
-
-  refreshMovies(ev: any) {
-    this.movies = ev.detail as any;
   }
 }

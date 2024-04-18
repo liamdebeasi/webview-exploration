@@ -58,22 +58,23 @@ struct ContentView: View {
         }
         
         
-        let javascript = "window.dispatchEvent(new CustomEvent('refresh-movies', { detail: \(jsonString) }));"
+        let javascript = "window.dispatchEvent(new CustomEvent('fetch-movies-response', { detail: \(jsonString) }));"
         webViewCoordinator.webView?.evaluateJavaScript(javascript)
     }
     
     private func handlerCallback(message: WKScriptMessage) {
         if let data = message.body as? [String: AnyObject],
-            let payload = data["data"] as? String,
             let type = data["type"] as? String {
             print(data)
                         
             if type == "createAddMovieView" {
                 self.showNewMovieView = true
             } else if type == "createEditMovieView" {
-                self.pushActive = true
-                self.pushPath = payload
-            } else if type == "requestMovies" {
+                if let payload = data["data"] as? String {
+                    self.pushActive = true
+                    self.pushPath = payload
+                }
+            } else if type == "fetch-movies" {
                 refreshMovies()
             }
         }

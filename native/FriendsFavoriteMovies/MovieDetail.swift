@@ -33,7 +33,7 @@ struct MovieDetail: View {
             if isNew {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") {
-                        let javascript = "window.dispatchEvent(new CustomEvent('confirm-add-movie'));";
+                        let javascript = "window.dispatchEvent(new CustomEvent('add-movie-confirm-response'));";
                         webViewCoordinator.webView?.evaluateJavaScript(javascript)
                     }
                 }
@@ -54,25 +54,25 @@ struct MovieDetail: View {
         if let data = message.body as? [String: AnyObject],
             let type = data["type"] as? String {
                                     
-            if type == "addMovie" {
+            if type == "add-movie" {
                 if let payload = data["data"] as? [String: AnyObject],
-                   let name = payload["name"] as? String,
+                   let title = payload["title"] as? String,
                    let releaseDate = payload["releaseDate"] as? String {
                     let dateFormatter = DateFormatter()
                     dateFormatter.dateFormat = "yyyy-MM-dd"
                     let formattedDate = dateFormatter.date(from: releaseDate)!
-                    let epochTime = Int(formattedDate.timeIntervalSince1970)
+                    let epochTime = Int(formattedDate.timeIntervalSince1970 * 1000)
                     
                     print(formattedDate, epochTime)
                     
-                    let movie = Movie(title: name, releaseDate: epochTime)
+                    let movie = Movie(title: title, releaseDate: epochTime)
                     modelContext.insert(movie)
                     
                     dismiss()
 
                 }
 
-            } else if type == "fetchMovie" {
+            } else if type == "fetch-movie" {
                 let payloadID = data["data"] as? String
                 if payloadID == nil {
                     return
@@ -85,7 +85,7 @@ struct MovieDetail: View {
                             return
                         }
                         
-                        let javascript = "window.dispatchEvent(new CustomEvent('receive-movie', { detail: \(jsonString) }));";
+                        let javascript = "window.dispatchEvent(new CustomEvent('fetch-movie-response', { detail: \(jsonString) }));";
                         webViewCoordinator.webView?.evaluateJavaScript(javascript)
                         
                         break
