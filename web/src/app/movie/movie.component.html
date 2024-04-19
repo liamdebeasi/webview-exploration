@@ -1,5 +1,5 @@
-<form>
-  <div class="list">
+<div class="list">
+  <form>
     <div class="item">
       <input type="text" name="title" [(ngModel)]="title" placeholder="Movie title" />
     </div>
@@ -7,5 +7,9 @@
       <label for="date">Release Date</label>
       <input id="date" name="releaseDate" [(ngModel)]="releaseDate" type="date" placeholder="Release Date" />
     </div>
-  </div>
-</form>
+  </form>
+
+  @if (id() !== undefined) {
+    <button>Delete Movie</button>
+  }
+</div>

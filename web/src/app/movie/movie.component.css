@@ -1,0 +1,22 @@
+button {
+  --color: #c5000f;
+
+  height: 50px;
+  width: 100%;
+
+  font-size: 1rem;
+
+  border-radius: 8px;
+
+  margin: 10px 0px;
+
+  color: var(--color);
+  background-color: rgb(from var(--color) r g b / 20%);
+  appearance: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  button {
+    --color: #f24c58;
+  }
+}
