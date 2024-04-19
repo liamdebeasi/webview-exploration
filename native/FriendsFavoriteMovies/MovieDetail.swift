@@ -11,7 +11,8 @@ import WebKit
 
 struct MovieDetail: View {
     let isNew: Bool
-    let url: String;
+    let url: String
+    var addCallback: (() -> Void)? = nil
     
     @Environment(\.dismiss) private var dismiss
     @Query() private var movies: [Movie]
@@ -19,9 +20,10 @@ struct MovieDetail: View {
     
     private var webViewCoordinator = WebViewCoordinator()
         
-    init(path: String = "/movie", isNew: Bool = false) {
+    init(path: String = "/movie", isNew: Bool = false, addCallback: (() -> Void)? = nil) {
         self.isNew = isNew
         self.url = "https://liam.ngrok.app" + path;
+        self.addCallback = addCallback ?? nil
     }
     
     var body: some View {
@@ -47,7 +49,7 @@ struct MovieDetail: View {
         }
     }
     
-    func addMovieData(message: WKScriptMessage) {
+    func addMovieData(message: WKScriptMessage) -> Any {
         
         print("Message", message.body)
 
@@ -68,6 +70,9 @@ struct MovieDetail: View {
                     let movie = Movie(title: title, releaseDate: epochTime)
                     modelContext.insert(movie)
                     
+                    if (self.addCallback != nil) {
+                        self.addCallback!()
+                    }
                     dismiss()
 
                 }
@@ -75,25 +80,22 @@ struct MovieDetail: View {
             } else if type == "fetch-movie" {
                 let payloadID = data["data"] as? String
                 if payloadID == nil {
-                    return
+                    return false
                 }
                 for movie in movies {
                     let toInt = Int(payloadID!)
                     if movie.id == toInt {
                         guard let json = try? JSONEncoder().encode(movie),
                               let jsonString = String(data: json, encoding: .utf8) else {
-                            return
+                            return false
                         }
                         
-                        let javascript = "window.dispatchEvent(new CustomEvent('fetch-movie-response', { detail: \(jsonString) }));";
-                        webViewCoordinator.webView?.evaluateJavaScript(javascript)
-                        
-                        break
+                        return jsonString
                     }
                 }
             }
         }
-        
+        return true
     }
 }
 

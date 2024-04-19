@@ -31,9 +31,9 @@ struct ContentView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showNewMovieView, onDismiss: refreshMovies) {
+            .sheet(isPresented: $showNewMovieView) {
                 NavigationView {
-                    MovieDetail(path: "/movie", isNew: true)
+                    MovieDetail(path: "/movie", isNew: true, addCallback: refreshMovies)
                 }
             }
             NavigationLink(destination: MovieDetail(path: self.pushPath), isActive: $pushActive) {

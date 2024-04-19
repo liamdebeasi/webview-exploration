@@ -59,7 +59,6 @@ class WebKitMessageHandler: NSObject, WKScriptMessageHandlerWithReply {
     
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage, replyHandler: @escaping (Any?, String?) -> Void) {
         let returnValue = self.callback(message)
-        print("Returning VALUE")
         replyHandler(returnValue, nil)
     }
 }
