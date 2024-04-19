@@ -20,15 +20,13 @@ struct WebView: UIViewRepresentable {
     }
     
     func makeUIView(context: Context) -> WKWebView {
-        let webView: WKWebView;
+        let config = WKWebViewConfiguration()
+        
         if (self.messageHandler != nil) {
-            let config = WKWebViewConfiguration()
-            config.userContentController.add(self.messageHandler, name: "navigationMessageHandler")
-            
-            webView = WKWebView(frame: .zero, configuration: config)
-        } else {
-            webView = WKWebView()
+            config.userContentController.addScriptMessageHandler(self.messageHandler, contentWorld: WKContentWorld.page, name: "messageHandler")
         }
+
+        let webView = WKWebView(frame: .zero, configuration: config)
                 
         coordinator?.webView = webView
         
@@ -52,15 +50,17 @@ class WebViewCoordinator: NSObject {
     var webView: WKWebView?
 }
 
-class WebKitMessageHandler: NSObject, WKScriptMessageHandler {
-    private var callback: (_: WKScriptMessage) -> Void
+class WebKitMessageHandler: NSObject, WKScriptMessageHandlerWithReply {
+    private var callback: (_: WKScriptMessage) -> Any
     
-    init(callback: @escaping (_: WKScriptMessage) -> Void) {
+    init(callback: @escaping (_: WKScriptMessage) -> Any) {
         self.callback = callback;
     }
-
-    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        self.callback(message)
+    
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage, replyHandler: @escaping (Any?, String?) -> Void) {
+        let returnValue = self.callback(message)
+        print("Returning VALUE")
+        replyHandler(returnValue, nil)
     }
 }
 

@@ -10,6 +10,6 @@ export class NavigationService {
   constructor() { }
 
   navigateMovieView(url?: string) {
-    this.native.queryNative('navigate-movie-view', url, false);
+    this.native.queryNative('navigate-movie-view', url);
   }
 }

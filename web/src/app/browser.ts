@@ -1,9 +1,9 @@
 interface MessageHandler {
-  postMessage: (...args: any) => void;
+  postMessage: (...args: any) => any;
 }
 
 interface MessageHandlers {
-  navigationMessageHandler: MessageHandler;
+  messageHandler: MessageHandler;
 }
 
 interface WKMessageHandler {

@@ -60,12 +60,13 @@ struct ContentView: View {
         
         let javascript = "window.dispatchEvent(new CustomEvent('fetch-movies-response', { detail: \(jsonString) }));"
         webViewCoordinator.webView?.evaluateJavaScript(javascript)
+        
+        return
     }
     
-    private func handlerCallback(message: WKScriptMessage) {
+    private func handlerCallback(message: WKScriptMessage) -> Any {
         if let data = message.body as? [String: AnyObject],
             let type = data["type"] as? String {
-            print(data)
                         
             if type == "navigate-movie-view" {
                 if let payload = data["data"] as? String {
@@ -75,9 +76,16 @@ struct ContentView: View {
                     self.showNewMovieView = true
                 }
             } else if type == "fetch-movies" {
-                refreshMovies()
+                guard let json = try? JSONEncoder().encode(movies),
+                      let jsonString = String(data: json, encoding: .utf8) else {
+                    return false
+                }
+                
+                return jsonString
             }
         }
+        
+        return true
     }
 
     private func deleteItems(offsets: IndexSet) {

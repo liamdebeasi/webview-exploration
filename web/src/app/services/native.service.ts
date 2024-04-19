@@ -28,31 +28,16 @@ export class NativeService {
   }
 
   // TODO Is there a way to have TypeScript infer the D type based on the type of the data passed in?
-  async queryNative<D = any, R = any>(type: string, data: D, waitForResponse = true): Promise<R | undefined> {
-    return new Promise((resolve, reject) => {
-      if (this.isNative()) {
-        const eventName = `${type}-response`;
-        const processData = (ev: any) => {
-          win!.removeEventListener(eventName, processData);
+  async queryNative<D = any, R = any>(type: string, data: D): Promise<R | undefined> {
+    if (this.isNative()) {
+      const response = await win!.webkit!.messageHandlers.messageHandler.postMessage({
+        type,
+        data
+      });
 
-          return resolve(ev.detail as R);
-        }
+      return JSON.parse(response) as R;
+    }
 
-        if (waitForResponse) {
-          win!.addEventListener(eventName, processData);
-        }
-
-        win!.webkit!.messageHandlers.navigationMessageHandler.postMessage({
-          type,
-          data
-        });
-
-        if (!waitForResponse) {
-          return resolve(undefined);
-        }
-      } else {
-        return reject(undefined);
-      }
-    });
+    return;
   }
 }
