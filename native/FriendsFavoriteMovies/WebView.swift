@@ -25,6 +25,8 @@ struct WebView: UIViewRepresentable {
         if (self.messageHandler != nil) {
             config.userContentController.addScriptMessageHandler(self.messageHandler, contentWorld: WKContentWorld.page, name: "messageHandler")
         }
+        
+        config.processPool = WKProcessPool()
 
         let webView = WKWebView(frame: .zero, configuration: config)
                 
@@ -32,7 +34,8 @@ struct WebView: UIViewRepresentable {
         
         let request = URLRequest(url: url)
         webView.load(request)
-        
+        webView.isOpaque = false;
+        webView.backgroundColor = .clear;
         webView.isInspectable = true
         
         return webView

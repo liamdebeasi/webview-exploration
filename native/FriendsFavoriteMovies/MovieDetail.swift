@@ -22,7 +22,7 @@ struct MovieDetail: View {
         
     init(path: String = "/movie", isNew: Bool = false, addCallback: (() -> Void)? = nil) {
         self.isNew = isNew
-        self.url = "https://liam.ngrok.app" + path;
+        self.url = "http://localhost:9000" + path;
         self.addCallback = addCallback ?? nil
     }
     
@@ -30,7 +30,7 @@ struct MovieDetail: View {
         WebView(url: URL(string: url)!, coordinator: webViewCoordinator, messageHandler: WebKitMessageHandler(callback: addMovieData))
             .ignoresSafeArea()
             .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle(isNew ? "New Movie" : "Movie")
+        .navigationTitle(isNew ? "New Movie" : "Message")
         .toolbar {
             if isNew {
                 ToolbarItem(placement: .confirmationAction) {

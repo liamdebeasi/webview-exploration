@@ -8,6 +8,8 @@
 import SwiftUI
 import SwiftData
 import WebKit
+import Foundation
+import Telegraph
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
@@ -17,13 +19,38 @@ struct ContentView: View {
     
     @State private var showNewMovieView: Bool = false;
     private var webViewCoordinator = WebViewCoordinator()
+        
+    var server: Server!
+    
+    init() {
+        // Serve the Server from Build folder
+        server = Server()
+        let demoBundleURL = Bundle.main.url(forResource: "browser", withExtension: nil)!
+        
+        let baseURI = URI(path: "/")
+        let handler = HTTPFileHandler(directoryURL: demoBundleURL, baseURI: baseURI, index: "index.html")
+        
+        server.route(.GET, "/*") { request in
+            let relativePath = request.uri.relativePath(from: baseURI.path)
+            let resourceURL = handler.directoryURL.appendingPathComponent("/")
+            
+            print("check",relativePath, resourceURL)
+
+            return try handler.responseForURL(resourceURL, byteRange: nil, request: request)
+        }
+            
+        //server.serveDirectory(demoBundleURL)
+        //server.serveDirectory(demoBundleURL, "movie/:id")
+        
+        try? server.start(port: 9000, interface: "localhost")
+    }
     
     var body: some View {
         NavigationSplitView {
-            WebView(url: URL(string: "https://liam.ngrok.app/")!, coordinator: webViewCoordinator, messageHandler: WebKitMessageHandler(callback: self.handlerCallback))
+            WebView(url: URL(string: "http://localhost:9000/")!, coordinator: webViewCoordinator, messageHandler: WebKitMessageHandler(callback: self.handlerCallback))
                 .ignoresSafeArea()
                 .navigationBarTitleDisplayMode(.inline)
-            .navigationTitle("Movies")
+            .navigationTitle("Inbox")
             .toolbar {
                 ToolbarItem {
                     Button(action: addMovie) {
@@ -42,7 +69,6 @@ struct ContentView: View {
             
         } detail: {
             Text("Select a movie")
-                .navigationTitle("Movie")
         }
     }
 

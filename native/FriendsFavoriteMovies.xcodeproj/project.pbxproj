@@ -18,6 +18,8 @@
 		3638C2C62BCE0D0800F120BD /* SampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3638C2C52BCE0D0800F120BD /* SampleData.swift */; };
 		3638C2C82BCE0F4500F120BD /* MovieDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3638C2C72BCE0F4500F120BD /* MovieDetail.swift */; };
 		3638C2CA2BCE137500F120BD /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3638C2C92BCE137500F120BD /* WebView.swift */; };
+		363A06022BD3507F00D2007F /* Telegraph in Frameworks */ = {isa = PBXBuildFile; productRef = 363A06012BD3507F00D2007F /* Telegraph */; };
+		363A06242BD3717500D2007F /* browser in Resources */ = {isa = PBXBuildFile; fileRef = 363A06232BD3717500D2007F /* browser */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +54,7 @@
 		3638C2C52BCE0D0800F120BD /* SampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleData.swift; sourceTree = "<group>"; };
 		3638C2C72BCE0F4500F120BD /* MovieDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetail.swift; sourceTree = "<group>"; };
 		3638C2C92BCE137500F120BD /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
+		363A06232BD3717500D2007F /* browser */ = {isa = PBXFileReference; lastKnownFileType = folder; name = browser; path = "../../web/dist/ssg-test/browser"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +62,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				363A06022BD3507F00D2007F /* Telegraph in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,6 +106,7 @@
 		3638C2982BCE0C1700F120BD /* FriendsFavoriteMovies */ = {
 			isa = PBXGroup;
 			children = (
+				363A06232BD3717500D2007F /* browser */,
 				3638C2992BCE0C1700F120BD /* FriendsFavoriteMoviesApp.swift */,
 				3638C29B2BCE0C1700F120BD /* ContentView.swift */,
 				3638C29D2BCE0C1700F120BD /* Movie.swift */,
@@ -155,6 +160,9 @@
 			dependencies = (
 			);
 			name = FriendsFavoriteMovies;
+			packageProductDependencies = (
+				363A06012BD3507F00D2007F /* Telegraph */,
+			);
 			productName = FriendsFavoriteMovies;
 			productReference = 3638C2962BCE0C1700F120BD /* FriendsFavoriteMovies.app */;
 			productType = "com.apple.product-type.application";
@@ -227,6 +235,9 @@
 				Base,
 			);
 			mainGroup = 3638C28D2BCE0C1700F120BD;
+			packageReferences = (
+				363A06002BD34F7000D2007F /* XCRemoteSwiftPackageReference "Telegraph" */,
+			);
 			productRefGroup = 3638C2972BCE0C1700F120BD /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -243,6 +254,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				363A06242BD3717500D2007F /* browser in Resources */,
 				3638C2A32BCE0C1800F120BD /* Preview Assets.xcassets in Resources */,
 				3638C2A02BCE0C1800F120BD /* Assets.xcassets in Resources */,
 			);
@@ -446,6 +458,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.3;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -475,6 +488,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.3;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -604,6 +618,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		363A06002BD34F7000D2007F /* XCRemoteSwiftPackageReference "Telegraph" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Building42/Telegraph.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.40.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		363A06012BD3507F00D2007F /* Telegraph */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 363A06002BD34F7000D2007F /* XCRemoteSwiftPackageReference "Telegraph" */;
+			productName = Telegraph;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 3638C28E2BCE0C1700F120BD /* Project object */;
 }
