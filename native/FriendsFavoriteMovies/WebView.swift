@@ -43,8 +43,15 @@ struct WebView: UIViewRepresentable {
 
     func updateUIView(_ webView: WKWebView, context: Context) {
         if (url != webView.url) {
-            let request = URLRequest(url: url)
-            webView.load(request)
+            /**
+             * Do not call webView.load because that will cause a full page reload. Instead, all we want to do
+             * is use the SPA router to mount the new component which allows us to avoid a full page reload
+             * and improve performance.
+             */            
+            let javascript = "window.dispatchEvent(new CustomEvent('native-route', { detail: '\(url.path)' }));"
+            webView.evaluateJavaScript(javascript)
+            
+            //webView.load(request)
         }
     }
 }

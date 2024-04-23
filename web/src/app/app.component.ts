@@ -17,6 +17,9 @@ export class AppComponent {
   private nativeService = inject(NativeService);
   private moviesService = inject(MoviesService);
   private destroyListener: (() => void) | undefined;
+  private destroyRouterListener: (() => void) | undefined;
+
+  private skipNative = false;
 
   constructor(private router: Router) {
     router.events.subscribe((val) => {
@@ -26,7 +29,13 @@ export class AppComponent {
       if (val instanceof ResolveEnd) {
         // ignore initial navigation
         if (val.url !== router.url && val.id !== 1) {
+          if (this.skipNative) {
+            this.skipNative = false;
+            return;
+          }
+
           this.pushNativeView(val.url);
+
         }
       }
     });
@@ -38,6 +47,9 @@ export class AppComponent {
     });
 
     this.destroyListener = destroy;
+
+    const destroyRouterListener = this.nativeService.listenForNative('native-route', this.setWebView.bind(this));
+    this.destroyRouterListener = destroyRouterListener;
   }
 
   ngOnDestroy() {
@@ -45,6 +57,17 @@ export class AppComponent {
       this.destroyListener();
       this.destroyListener = undefined;
     }
+
+    if (this.destroyRouterListener) {
+      this.destroyRouterListener();
+      this.destroyRouterListener = undefined;
+    }
+  }
+
+  // TODO this is hacky
+  setWebView(path: string) {
+    this.skipNative = true;
+    this.router.navigateByUrl(path, { replaceUrl: true });
   }
 
   pushNativeView(url: string) {
