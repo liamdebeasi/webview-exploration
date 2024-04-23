@@ -37,7 +37,7 @@ struct WebView: UIViewRepresentable {
         webView.isOpaque = false;
         webView.backgroundColor = .clear;
         webView.isInspectable = true
-        
+
         return webView
     }
 
@@ -50,8 +50,6 @@ struct WebView: UIViewRepresentable {
              */            
             let javascript = "window.dispatchEvent(new CustomEvent('native-route', { detail: '\(url.path)' }));"
             webView.evaluateJavaScript(javascript)
-            
-            //webView.load(request)
         }
     }
 }

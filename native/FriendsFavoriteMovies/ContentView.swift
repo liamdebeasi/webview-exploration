@@ -29,11 +29,14 @@ struct ContentView: View {
         
         let baseURI = URI(path: "/")
         let handler = HTTPFileHandler(directoryURL: demoBundleURL, baseURI: baseURI, index: "index.html")
-        
         server.route(.GET, "/*") { request in
-            try handler.responseForURL(demoBundleURL, byteRange: nil, request: request)
+            let relativePath = request.uri.relativePath(from: baseURI.path) ?? "/"
+            let actualPath = relativePath.contains(".") ? relativePath : ""
+            let resourceURL = handler.directoryURL.appendingPathComponent(actualPath)
+            
+            return try handler.responseForURL(resourceURL, byteRange: nil, request: request)
         }
-
+        
         try? server.start(port: 9000, interface: "localhost")
     }
     
