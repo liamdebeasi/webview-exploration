@@ -42,7 +42,9 @@ struct ContentView: View {
     
     var body: some View {
         NavigationSplitView {
-            WebView(url: URL(string: "http://localhost:9000/")!, coordinator: webViewCoordinator, messageHandler: WebKitMessageHandler(callback: self.handlerCallback))
+            // TODO this needs to handle redirects otherwise every state change will cause
+            // the base path to reload
+            WebView(url: URL(string: "http://localhost:9000/home")!, coordinator: webViewCoordinator, messageHandler: WebKitMessageHandler(callback: self.handlerCallback))
                 .ignoresSafeArea()
                 .navigationBarTitleDisplayMode(.inline)
             .navigationTitle("Inbox")
@@ -63,7 +65,7 @@ struct ContentView: View {
             }.hidden()
             
         } detail: {
-            Text("Select a movie")
+            Text("Select an item")
         }
     }
 
