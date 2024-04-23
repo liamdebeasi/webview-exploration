@@ -31,17 +31,9 @@ struct ContentView: View {
         let handler = HTTPFileHandler(directoryURL: demoBundleURL, baseURI: baseURI, index: "index.html")
         
         server.route(.GET, "/*") { request in
-            let relativePath = request.uri.relativePath(from: baseURI.path)
-            let resourceURL = handler.directoryURL.appendingPathComponent("/")
-            
-            print("check",relativePath, resourceURL)
-
-            return try handler.responseForURL(resourceURL, byteRange: nil, request: request)
+            try handler.responseForURL(demoBundleURL, byteRange: nil, request: request)
         }
-            
-        //server.serveDirectory(demoBundleURL)
-        //server.serveDirectory(demoBundleURL, "movie/:id")
-        
+
         try? server.start(port: 9000, interface: "localhost")
     }
     
